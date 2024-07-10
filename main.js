@@ -1,5 +1,5 @@
 //const API_KEY = `8642daad00954a93b3182f67cfb01f6b`;
-let news = []; //전역 변수로 선언
+let newsList = []; //전역 변수로 선언
 
 //뉴스를 가져오는 함수
 const getLatestNews = async () => {
@@ -18,7 +18,40 @@ const getLatestNews = async () => {
 
   //우리가 받은 response에서 json을 뽑아내겠다
   const data = await response.json(); //json == 파일 형식 중 하나 (객체를 텍스트화 시킨 타입)
-  news = data.articles; //data.articles 하게 되면 뉴스 관련된 array를 받을 수 있음
-  console.log('ddd', news);
+  newsList = data.articles; //data.articles 하게 되면 뉴스 관련된 array를 받을 수 있음
+  render();
+  console.log('ddd', newsList);
 };
+
+//뉴스를 그려주는 함수
+//render 함수는 newsList가 확정되어야 사용 가능
+const render = () => {
+  const newsHTML = newsList
+    .map(
+      (news) => `<div class="row news">
+    <div class="col-lg-4">
+      <img
+        class="new-img-size"
+        src= ${news.urlToImage}
+      />
+    </div>
+    <div class="col-lg-8">
+      <h2>
+        ${news.title}
+      </h2>
+      <p>
+        ${news.description}
+      </p>
+      <div>
+        ${news.source.naem} * ${news.publishedAt}
+      </div>
+    </div>
+  </div>`
+    )
+    .join(''); //배열을 문자열로 바꿈
+  console.log('html', newsHTML);
+
+  document.getElementById('news-board').innerHTML = newsHTML;
+};
+
 getLatestNews();
