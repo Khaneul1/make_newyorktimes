@@ -7,9 +7,16 @@ menus.forEach((menu) =>
   menu.addEventListener('click', (event) => getNewsByCategory(event))
 );
 
-const FetchResponse = async () => {
+let url = new URL(
+  `https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines`
+); //url 변수를 전역변수로 선언
+
+//중복되는 코드들 함수 안에 넣기
+const getNews = async () => {
   const response = await fetch(url);
   const data = await response.json();
+  newsList = data.articles;
+  render();
 };
 
 //뉴스를 가져오는 함수
@@ -18,19 +25,20 @@ const getLatestNews = async () => {
   //URL = 인스턴스
   //>> url 작업에 필요한 변수나 함수를 제공해 줌
   //http 주소로 생성된 URL이라는 인스턴스를 새로 만들어 준다!!
-  const url = new URL(
+  url = new URL(
     `https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines`
   );
-  console.log('uuu', url);
   //apiKey는 따로 빼두는 게 좋음
-  const response = await fetch(url); //우리가 호출하고 싶은 url 넣어 주면 됨
+  // const response = await fetch(url); //우리가 호출하고 싶은 url 넣어 주면 됨
   //이게 끝나면 response 값을 받아 볼 수 있음
   //fetch() : 데이터 달라고 요청하는 것
 
+  getNews();
+
   //우리가 받은 response에서 json을 뽑아내겠다
-  const data = await response.json(); //json == 파일 형식 중 하나 (객체를 텍스트화 시킨 타입)
-  newsList = data.articles; //data.articles 하게 되면 뉴스 관련된 array를 받을 수 있음
-  render();
+  // const data = await response.json(); //json == 파일 형식 중 하나 (객체를 텍스트화 시킨 타입)
+  // newsList = data.articles; //data.articles 하게 되면 뉴스 관련된 array를 받을 수 있음
+  // render();S
   console.log('ddd', newsList);
 };
 
@@ -40,17 +48,12 @@ const getNewsByCategory = async (event) => {
   const category = event.target.textContent.toLowerCase();
   console.log('category', category);
   //2.카테고리별 뉴스 가져오기
-  const url = new URL(
-    `https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines?&category=${category}`
+  url = new URL(
+    `https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines?category=${category}`
   );
-  const response = await fetch(url);
-  const data = await response.json();
-  console.log('Ddd', data);
-
   //3.가져온 뉴스 보여주기 (render())
   //내가 보여 주고 싶은 내용을 newsList에 넣어 줘야 함
-  newsList = data.articles;
-  render();
+  getNews();
 };
 
 //검색 기능
@@ -58,16 +61,11 @@ const getNewsByKeyword = async () => {
   //input창 키워드 읽어오기
   const keyword = document.getElementById('search-input').value;
   console.log('keyword', keyword);
-  const url = new URL(
-    `https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines?&q=${keyword}`
+  url = new URL(
+    `https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines?q=${keyword}`
   );
 
-  const response = await fetch(url);
-  const data = await response.json();
-  console.log('keyword data', data);
-
-  newsList = data.articles;
-  render();
+  getNews();
 };
 
 //뉴스를 그려주는 함수
