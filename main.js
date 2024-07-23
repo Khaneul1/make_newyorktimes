@@ -11,12 +11,32 @@ let url = new URL(
   `https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines`
 ); //url 변수를 전역변수로 선언
 
+let totalResults = 0;
+//임의로 정해 줄 수 있는 값
+let page = 1;
+const pageSize = 10; //pageSize와 groupSize는 고정된 값
+const groupSize = 5;
+
 //중복되는 코드들 함수 안에 넣기
 const getNews = async () => {
-  const response = await fetch(url);
-  const data = await response.json();
-  newsList = data.articles;
-  render();
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    if (response.status === 200) {
+      if (data.articles.length === 0) {
+        throw new Error('No result for this search');
+      }
+      newsList = data.articles;
+      totalResult = data.totalResults;
+      render();
+      paginationRender();
+    } else {
+      throw new Error(data.message); //data 안에 있는 메시지를 에러 메시지로 던져 줌
+    }
+  } catch (error) {
+    // console.log('error', error.message);
+    errorRender(error.message);
+  }
 };
 
 //뉴스를 가져오는 함수
@@ -97,6 +117,59 @@ const render = () => {
   console.log('html', newsHTML);
 
   document.getElementById('news-board').innerHTML = newsHTML;
+};
+
+const errorRender = (errorMessage) => {
+  const errorHTML = `<div class="alert alert-danger" role="alert">
+    ${errorMessage}
+  </div>`;
+
+  document.getElementById('news-board').innerHTML = errorHTML;
+};
+
+const paginationRender = () => {
+  //totalResult
+  // > api 호출할 때마다 .totalResult라는 값이 들어있음
+  //page
+  //pageSize
+  //groupSize
+
+  //pageGroup
+  const pageGroup = Math.ceil(page / groupSize);
+  //lastPage
+  const lastPage = pageGroup * groupSize;
+  //fistPage
+  const firstPage = lastPage - (groupSize - 1);
+
+  let paginationHTML = ``;
+  //숫자만 알 뿐 배열이 아님!! 기존처럼 배열 함수를 쓸 수 없음
+  for (let i = firstPage; i <= lastPage; i++) {
+    paginationHTML += `<li class="page-item">
+        <a class="page-link" href="#">
+          ${i}
+        </a>
+      </li>`;
+  }
+
+  document.querySelector('.pagination').innerHTML = paginationHTML;
+
+  //   <nav aria-label="Page navigation example">
+  //   <ul class="pagination">
+  //     <li class="page-item">
+  //       <a class="page-link" href="#" aria-label="Previous">
+  //         <span aria-hidden="true">&laquo;</span>
+  //       </a>
+  //     </li>
+  //     <li class="page-item"><a class="page-link" href="#">1</a></li>
+  //     <li class="page-item"><a class="page-link" href="#">2</a></li>
+  //     <li class="page-item"><a class="page-link" href="#">3</a></li>
+  //     <li class="page-item">
+  //       <a class="page-link" href="#" aria-label="Next">
+  //         <span aria-hidden="true">&raquo;</span>
+  //       </a>
+  //     </li>
+  //   </ul>
+  // </nav>
 };
 
 getLatestNews();
