@@ -11,6 +11,13 @@ let url = new URL(
   `https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines`
 ); //url 변수를 전역변수로 선언
 
+userInput = document.getElementById('search-input');
+userInput.addEventListener('keyup', function (event) {
+  if (event.key === 'Enter') {
+    getNewsByKeyword();
+  }
+});
+
 let totalResults = 0;
 //임의로 정해 줄 수 있는 값
 let page = 1;
@@ -20,14 +27,20 @@ const groupSize = 5;
 //중복되는 코드들 함수 안에 넣기
 const getNews = async () => {
   try {
+    //우리가 전달받은 url 뒤에 페이지네시연 정보를 붙임
+    //페이지라는 파라미터를 세팅해 준다는 의미
+    url.searchParams.set('page', page); // => &page=page
+    url.searchParams.set('pageSize', pageSize);
+
     const response = await fetch(url);
+
     const data = await response.json();
     if (response.status === 200) {
       if (data.articles.length === 0) {
         throw new Error('No result for this search');
       }
       newsList = data.articles;
-      totalResult = data.totalResults;
+      totalResults = data.totalResults;
       render();
       paginationRender();
     } else {
@@ -114,7 +127,6 @@ const render = () => {
   </div>`
     )
     .join(''); //배열을 문자열로 바꿈
-  console.log('html', newsHTML);
 
   document.getElementById('news-board').innerHTML = newsHTML;
 };
@@ -133,22 +145,50 @@ const paginationRender = () => {
   //page
   //pageSize
   //groupSize
-
+  //totalPages
+  const totalPages = Math.ceil(totalResults / pageSize);
   //pageGroup
   const pageGroup = Math.ceil(page / groupSize);
   //lastPage
-  const lastPage = pageGroup * groupSize;
-  //fistPage
-  const firstPage = lastPage - (groupSize - 1);
+  let lastPage = pageGroup * groupSize;
+  //마지막 페이지 그룹이 그룹 사이즈보다 작다면 lastPage = totalPage
+  if (lastPage > totalPages) {
+    lastPage = totalPages;
+  }
 
-  let paginationHTML = ``;
+  //fistPage
+  const firstPage =
+    lastPage - (groupSize - 1) <= 0 ? 1 : lastPage - (groupSize - 1);
+
+  let paginationHTML = `<li class="page-item" onclick="movetoPage(${
+    page - 1
+  })"><a class="page-link" href="#">&lt;</a></li>`;
+
+  if (page === firstPage) {
+    paginationHTML = `<li class="page-item disabled">
+    <a class="page-link">&lt;</a>
+  </li>`;
+  }
+
   //숫자만 알 뿐 배열이 아님!! 기존처럼 배열 함수를 쓸 수 없음
   for (let i = firstPage; i <= lastPage; i++) {
-    paginationHTML += `<li class="page-item">
-        <a class="page-link" href="#">
+    paginationHTML += `<li class="page-item ${
+      i === page ? 'active' : ''
+    }" onclick="movetoPage(${i})">
+        <a class="page-link">
           ${i}
         </a>
       </li>`;
+  }
+
+  if (page === totalPages) {
+    paginationHTML += `<li class="page-item disabled">
+      <a class="page-link">&gt;</a>
+    </li>`;
+  } else {
+    paginationHTML += `<li class="page-item" onclick="movetoPage(${
+      page + 1
+    })"><a class="page-link" href="#">&gt;</a></li>`;
   }
 
   document.querySelector('.pagination').innerHTML = paginationHTML;
@@ -171,5 +211,9 @@ const paginationRender = () => {
   //   </ul>
   // </nav>
 };
-
+const movetoPage = (pageNum) => {
+  console.log('movetoPage', pageNum);
+  page = pageNum;
+  getNews();
+};
 getLatestNews();

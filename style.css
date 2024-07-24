@@ -65,3 +65,15 @@
   text-align: center;
   /* border-radius: 5em; */
 }
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 3%;
+}
+
+#news-board div {
+  margin-top: 10px;
+  margin-bottom: 38px;
+  text-align: justify;
+}
