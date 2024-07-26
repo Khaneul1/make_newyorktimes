@@ -11,8 +11,15 @@
       crossorigin="anonymous"
     />
     <link rel="stylesheet" href="style.css" />
+    <style>
+      * {
+        font-family: 'Dokrip';
+        font-weight: normal;
+        font-style: normal;
+      }
+    </style>
   </head>
-  <body>
+  <body class="all">
     <!-- container 스타일은 부트스트랩에서 온 것 -->
     <section class="container">
       <div>
@@ -21,25 +28,23 @@
           class="inputStyle"
           placeholder="검색어를 입력하세요"
         />
-        <button class="searchButton" onclick="getNewsByKeyword()">
-          Search
-        </button>
+        <button class="searchButton" onclick="getNewsByKeyword()">검색</button>
       </div>
       <section>
         <!-- title, menu -->
         <div class="head-line">
           <!-- title -->
-          <i class="css-169ihkd">The New York Times</i>
+          <i class="css-169ihkd">고려일보</i>
         </div>
         <div class="menus">
           <!-- menu -->
-          <button>Business</button>
-          <button>Entertainment</button>
-          <button>General</button>
-          <button>Health</button>
-          <button>Science</button>
-          <button>Sports</button>
-          <button>Technology</button>
+          <button>사업</button>
+          <button>엔터테인먼트</button>
+          <button>일반</button>
+          <button>건강</button>
+          <button>과학</button>
+          <button>운동</button>
+          <button>기술</button>
         </div>
       </section>
       <section id="news-board">

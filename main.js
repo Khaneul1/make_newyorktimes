@@ -1,6 +1,17 @@
 //const API_KEY = `8642daad00954a93b3182f67cfb01f6b`;
 let newsList = []; //전역 변수로 선언
 
+// 카테고리 매핑 객체
+const categoryMapping = {
+  사업: 'business',
+  엔터테인먼트: 'entertainment',
+  일반: 'general',
+  건강: 'health',
+  과학: 'science',
+  운동: 'sports',
+  기술: 'technology',
+};
+
 //1.버튼들에 클릭 이벤트 주기
 const menus = document.querySelectorAll('.menus button'); //menus 밑에 있는 button 전부 들고 옴
 menus.forEach((menu) =>
@@ -35,9 +46,11 @@ const getNews = async () => {
     const response = await fetch(url);
 
     const data = await response.json();
-    if (response.status === 200) {
+    console.log('Ddd', data);
+
+    if (response.status == 200) {
       if (data.articles.length === 0) {
-        throw new Error('No result for this search');
+        throw new Error('해당 내용을 찾을 수 없습니다.');
       }
       newsList = data.articles;
       totalResults = data.totalResults;
@@ -76,9 +89,12 @@ const getLatestNews = async () => {
 };
 
 const getNewsByCategory = async (event) => {
+  //클릭한 버튼의 한국어 텍스트 읽기
+  const koreanCategory = event.target.textContent;
   //카테고리가 event에서 잘 읽히는지 확인
   // +) 콘솔에서 category가 전부 대문자로 나옴 >> 컴퓨터에서는 대소문자 구분이 중요하기 때문에 이를 전부 소문자로 바꿔 주기
-  const category = event.target.textContent.toLowerCase();
+  // const category = event.target.textContent.toLowerCase();
+  const category = categoryMapping[koreanCategory];
   console.log('category', category);
   //2.카테고리별 뉴스 가져오기
   url = new URL(
@@ -216,4 +232,5 @@ const movetoPage = (pageNum) => {
   page = pageNum;
   getNews();
 };
+
 getLatestNews();
